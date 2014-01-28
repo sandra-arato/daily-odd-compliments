@@ -7,20 +7,19 @@ window.fbAsyncInit = function() {
 		xfbml: true  // parse XFBML
 	});
 
-	syncInit = true;
+	
+  
+	$.ajax( {
+		dataType: "json",
+		url: "https://www.facebook.com/feeds/page.php?id=342691952483262&format=json",
+		success: function() {
+					console.log("ajax call success");
+					console.log(data);
+		}
+	})
+	.done( function() { console.log("should be done");});
 
 	console.log("Facebook setup completed. Start fetching now...");
 
-	if (syncInit) {
-		FB.api( "/342691952483262/feed/links/", function (response) {
-			console.log("starting....");
-			if (response && !response.error) {
-				onsole.log("there is hope after all");
-				console.log(response.data);
-			}
-			else {
-				console.log(response.error);
-			}
-		});
-	}
+	
 }
