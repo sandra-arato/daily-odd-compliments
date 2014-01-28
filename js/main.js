@@ -8,7 +8,14 @@ window.fbAsyncInit = function() {
 	});
 
 	syncInit = true;
+
+	console.log("Facebook setup completed. Start fetching now...");
+
 	if (syncInit) {
-		console.log("Facebook setup completed. Start fetching now...");
+		FB.api( "/342691952483262/links/", function (response) {
+			if (response && !response.error) {
+				console.log(response.data);
+			}
+		});
 	}
 }
