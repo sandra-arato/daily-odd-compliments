@@ -13,8 +13,13 @@ window.fbAsyncInit = function() {
 
 	if (syncInit) {
 		FB.api( "/342691952483262/links/", function (response) {
+			console.log("starting....");
 			if (response && !response.error) {
+				onsole.log("there is hope after all");
 				console.log(response.data);
+			}
+			else {
+				console.log(response.error);
 			}
 		});
 	}
