@@ -1,9 +1,38 @@
-body {
+@media all {
+	body {
 	font-family: Helvetica, sans-serif;
 	font-size: 24px;
 	color: #fff;
 	background-color: #222;
+	}
+	.compliment {
+		line-height: 1.3;
+	}
 }
+
+@media all and (max-width: 724px) {
+	body {
+		font-size: 18px;
+	}
+
+	div.compliment {
+		height: 7.8em;
+		margin: 0;
+		padding: 0.5em 1.5em 0 2.6em;
+	}
+}
+
+@media all and (max-width: 509px) {
+	body {
+		font-size: 14px;
+	}
+	div.compliment {
+		height: 9em;
+		margin: 0;
+		padding: 0.5em 1.5em 0 1.5em;
+}
+}
+
 
 a {
 	text-decoration: none;
@@ -12,4 +41,9 @@ a {
 
 a:hover {
 	color: #ddd;
+}
+
+.compliment {
+	margin: 0;
+	padding: 0.5em 1.5em 0 4em;
 }

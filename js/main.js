@@ -1,7 +1,7 @@
 var comp;
 
 var compliments = [
-	"The first time we met, I was like, \'Well, this person seems cool.\' And now I\'m like, \'I literally think you can read my mind.",
+	"The first time we met, I was like, \'Well, this person seems cool.\' And now I\'m like, \'I literally think you can read my mind.\'",
 	"Your sense of humor is fantastic. And by that I mean you laugh at my jokes. Which is fantastic.",
 	"Being an adult is hard sometimes. And on days like that, it\'s nice to know that I can throw a childish tantrum and you won\'t judge me for it.",
 	"I like having you as my friend because I can say things like, \'Pay attention to me!\' And you\'ll actually do it. And I appreciate that.",
@@ -41,42 +41,90 @@ function createComplimentDivs () {
 		var c = $.parseHTML("<div class='compliment'>" + comp[i] + "</div>");
 			$("#container").append(c);
 			$(c).css({
-				// "position": "absolute",
-				"width": "100%",
+				"position": "absolute",
+				"height": "6.8em",
 				"margin": "0",
-				"padding": "3em auto 2em 6em",
+				"padding": "3em auto 2em 5em",
+				"font-size": "170%",
 				"background-color": randomColor(),
-				"color": "#ffffff"
+				"z-index": 100-i
 			})
-			c
-		}
-
+	}
+	resizeCheck();
 }
 
-// window.fbAsyncInit = function() {
-// 	FB.init({
-// 		appId: '516347275130300', // App ID
-// 		channelUrl: 'http://sandraszenti.github.io/daily-odd-compliments/channel.html',
-// 		status: true, // check login status
-// 		cookie: true, // enable cookies to allow the server to access the session
-// 		xfbml: true  // parse XFBML
-// 	});
-  
-// 	// $.ajax( {
-// 	// 	dataType: "json",
-// 	// 	url: "https://www.facebook.com/feeds/page.php?id=342691952483262&format=json",
-// 	// 	success: function() {
-// 	// 				console.log("ajax call success");
-// 	// 				console.log(data);
-// 	// 	}
-// 	// })
-// 	// .done( function() { console.log("should be done");});
-// 	console.log("Facebook setup completed. Start fetching now...");
-// }
+function resizeCheck() {
+	$(window).resize(function () {
+		console.log("resize to..");
+		if ($(window).width() < 725) {
+			if ($(window).width() < 510) {
+				$("#container div").css("height", "9.2em");
+				return;
+			};
+			$("#container div").css("height", "7.8em");
+		};
+		$("#container div").css("height", "6.8em");
+	})
+}
+
+function deleteTopDiv () {
+	var index_highest = 0;
+	var currentDiv;
+	$("#container div").each(function() {
+		var index_current = parseInt($(this).css("z-index"), 10);
+		if(index_current > index_highest) {
+			index_highest = index_current;
+			currentDiv = this;
+		}
+	});
+
+	if ($(currentDiv).css("visibility", "visible")) {
+		var c = $("#container div");
+		var w = parseInt($(window).width());
+		var h = parseInt($(currentDiv).height());
+		var i = 0;
+		console.log();
+
+
+		function clipCompliment (e) {
+                $(currentDiv).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
+                i++;
+                if (i == h) {
+                	console.log("h", h, "== i", i);
+                	$(currentDiv).css("visibility", "hidden");
+                	$(currentDiv).css("clip", "rect(0px, "+ w + "px, " + h + "px, 0px)");
+                	clearInterval(timer);
+                }
+        }
+        
+        $("#next-button").click(clipCompliment);
+        var timer = setInterval(clipCompliment, 16);
+
+        if (i == h) {
+        	
+        }
+
+		// for (i = 1; i < h; i++ ) {
+		// 	console.log("slice");
+		// 	console.log("w", w, "h", h, "i", i, "h-i", h-i);
+		// 	setTimeout(function(){
+		// 		$(currentDiv).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
+		// 		// $(currentDiv).css("background-color", randomColor());
+		// 		// console.log($(currentDiv).css("background-color"));
+		// 	},1600);
+		// 	setTimeout(function(){}, 1000);
+		// }
+		console.log("done");
+		// $(currentDiv).css("visibility", "hidden");		
+	};
+}
 
 function initialize() {
 	sortCompliments();
 	createComplimentDivs();
+	resizeCheck();
+	deleteTopDiv();
+
 }
 
 $(document).ready(initialize);
