@@ -157,7 +157,12 @@ function makeCorsRequest() {
 }
 
 function initialize() {
-	makeCorsRequest();
+	// makeCorsRequest();
+	$.getJSON("https://www.facebook.com/feeds/page.php?id=342691952483262&format=json", function (data) {
+		console.log("loading started");
+		console.log(data);
+	});
+
 	// // sort compliments based on text length: 
 	// comp = $.map(comp, function(val, i) {
 	// 	if (comp[i].length <= 140) { return val; }
