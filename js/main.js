@@ -107,19 +107,76 @@ function resizeCheck() {
 	})
 }
 
+function getCompliments () {
+	console.log("get compliments started");
+		// Create the XHR object.
+	function createCORSRequest(method, url) {
+	  var xhr = new XMLHttpRequest();
+	  if ("withCredentials" in xhr) {
+	    // XHR for Chrome/Firefox/Opera/Safari.
+	    xhr.open(method, url, true);
+	  } else if (typeof XDomainRequest != "undefined") {
+	    // XDomainRequest for IE.
+	    xhr = new XDomainRequest();
+	    xhr.open(method, url);
+	  } else {
+	    // CORS not supported.
+	    xhr = null;
+	  }
+	  return xhr;
+	}
+
+	// Helper method to parse the title tag from the response.
+	function getTitle(text) {
+	  return text.match('<title>(.*)?</title>')[1];
+	}
+
+	// Make the actual CORS request.
+	function makeCorsRequest() {
+	  // All HTML5 Rocks properties support CORS.
+	  var url = 'https://www.facebook.com/feeds/page.php?id=342691952483262&format=json';
+
+	  var xhr = createCORSRequest('GET', url);
+	  if (!xhr) {
+	    alert('CORS not supported');
+	    return;
+	  }
+
+	  // Response handlers.
+	  xhr.onload = function() {
+	    var text = xhr.responseText;
+	    var title = getTitle(text);
+	    alert('Response from CORS request to ' + url + ': ' + title);
+	  };
+
+	  xhr.onerror = function() {
+	    alert('Woops, there was an error making the request.');
+	  };
+
+	  xhr.send();
+	}
+}
+
+function processData (response) {
+	console.log("success!");
+	console.log(response);
+}
 
 function initialize() {
-	// sort compliments based on text length: 
-	comp = $.map(comp, function(val, i) {
-		if (comp[i].length <= 140) { return val; }
-	});
+	getCompliments();
+	console.log("done");
 
-	// create divs with compliments in them
-	createComplimentDivs();
-	resizeCheck();
+	// // sort compliments based on text length: 
+	// comp = $.map(comp, function(val, i) {
+	// 	if (comp[i].length <= 140) { return val; }
+	// });
 
-	// remove top compliment div with clipping method, one after another
-	timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
+	// // create divs with compliments in them
+	// createComplimentDivs();
+	// resizeCheck();
+
+	// // remove top compliment div with clipping method, one after another
+	// timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
 }
 
 $(document).ready(initialize);
