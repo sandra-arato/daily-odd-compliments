@@ -136,11 +136,12 @@ function makeCorsRequest() {
   var url = 'https://www.facebook.com/feeds/page.php?id=342691952483262&format=json';
 
   var xhr = createCORSRequest('GET', url);
+  xhr.setRequestHeader('X-Custom-Header', 'value');
   if (!xhr) {
     alert('CORS not supported');
     return;
   }
-
+  
   // Response handlers.
   xhr.onload = function() {
     var text = xhr.responseText;
