@@ -1,7 +1,6 @@
-var comp;
 var timer;
 
-var compliments = [
+var comp = [
 	"The first time we met, I was like, \'Well, this person seems cool.\' And now I\'m like, \'I literally think you can read my mind.\'",
 	"Your sense of humor is fantastic. And by that I mean you laugh at my jokes. Which is fantastic.",
 	"Being an adult is hard sometimes. And on days like that, it\'s nice to know that I can throw a childish tantrum and you won\'t judge me for it.",
@@ -26,13 +25,10 @@ function allDivsHide (callback) {
 		if (indexCurrent > indexHighest) {
 			indexHighest = indexCurrent;
 			currentDiv = this;
-			console.log(currentDiv);
 		}
 	});
 
 	$(currentDiv).attr("id", "current");
-	console.log(currentDiv);
-	console.log("current starts with: ", $("#current").html());
 
 	callback($("#current"));
 }
@@ -68,16 +64,6 @@ function randomColor () {
 		color += letters[Math.round(Math.random() * 15)];
 	}
 	return color;
-}
-
-function sortCompliments () { // later change this function to $.map()
-	comp = [];
-	for (var i=0, len=compliments.length; i<len; i++) {
-		var n = compliments[i].length;
-		if (n <= 140) {
-			comp.push(compliments[i]);
-		};
-	}
 }
 
 function createComplimentDivs () {
@@ -118,9 +104,18 @@ function resizeCheck() {
 
 
 function initialize() {
-	sortCompliments();
+	// sort compliments based on text length: 
+	comp = $.map(comp, function(val, i) {
+		if (comp[i].length <= 140) {
+			return val;
+		}
+	});
+
+	// create divs with compliments in them
 	createComplimentDivs();
 	resizeCheck();
+
+	// remove top compliment div with clipping method, one after another
 	timer = setTimeout(function () { allDivsHide(clipCompliment); }, 3400);
 }
 
