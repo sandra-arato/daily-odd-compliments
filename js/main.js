@@ -1,5 +1,5 @@
 var comp;
-var indexHighest = 0;
+
 // var currentDiv;
 var timer;
 
@@ -19,44 +19,55 @@ var compliments = [
 	"You smell so good, I wish I could wax your scent into a candle. On a related note, I have no idea how candles are made."
 ];
 
-function allDivsHide () {
+function allDivsHide (callback) {
+	var indexHighest = 0;
 	var currentDiv;
 
 	$("#container div").each(function() {
+		// console.log("this is it", $(this));
+		// console.log(this);
 		var indexCurrent = parseInt($(this).css("z-index"));
-		if(indexCurrent > indexHighest && $(this).css("visibility") == "visible") {
+		if (indexCurrent > indexHighest) {
 			indexHighest = indexCurrent;
 			currentDiv = this;
+			console.log(currentDiv);
 		}
 	});
 
 	$(currentDiv).attr("id", "current");
-	if (clipCompliment()) {
-		allDivsHide();
-	};
+	console.log(currentDiv);
+	console.log("current starts with: ", $("#current").html());
+
+	callback($("#current"));
 }
 
-function clipCompliment (e) {
+function clipCompliment (c) {
 
-	var c = $("#current");
 	var w = parseInt($(window).width());
 	var h = parseInt($("#current").height());
 	var p = parseInt($(c).css("padding-top")); // top padding of the div
+	var z = parseInt($(c).css("z-index"));
 	var i = 0;
-
-	// console.log("padding top is ", p);
 
 	timer = setInterval(function () {
 		$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + p + "px, 0px)");
         i++;
         if (i == h + p) {
-        	$(c).css("visibility", "hidden");
+        	$(c).css("z-index", z * (-1) );
         	$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)");
         	$(c).removeAttr("id");
         	clearInterval(timer);
+        	console.log("first really down.");
+        	if ( $(c).hasClass("last")) {
+        		console.log("last one finished");
+        		return;
+        	}
+        	else {
+        		console.log("next one trying");
+        		allDivsHide(clipCompliment);
+        	};
         }
 	}, 30);
-	return true;
 }
 
 function randomColor () {
@@ -93,6 +104,9 @@ function createComplimentDivs () {
 			"background-color": randomColor(),
 			"z-index": 100-i
 		});
+		if ( i == len - 1 ) {
+			$(c).addClass("last");
+		};
 	}
 	// resizeCheck();
 }
@@ -128,8 +142,14 @@ function initialize() {
 	sortCompliments();
 	createComplimentDivs();
 	resizeCheck();
+	console.log(comp.length);
+	// for (var i = 0, len = comp.length; i < len; i++) {
+	// 	allDivsHide();
+	// 	console.log( len - i - 1, " to go");
+	// };
 
-	allDivs();
+	allDivsHide(clipCompliment);
+	
 	
 }
 
