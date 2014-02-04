@@ -1,6 +1,4 @@
 var comp;
-
-// var currentDiv;
 var timer;
 
 var compliments = [
@@ -24,8 +22,6 @@ function allDivsHide (callback) {
 	var currentDiv;
 
 	$("#container div").each(function() {
-		// console.log("this is it", $(this));
-		// console.log(this);
 		var indexCurrent = parseInt($(this).css("z-index"));
 		if (indexCurrent > indexHighest) {
 			indexHighest = indexCurrent;
@@ -49,25 +45,20 @@ function clipCompliment (c) {
 	var z = parseInt($(c).css("z-index"));
 	var i = 0;
 
-	timer = setInterval(function () {
-		$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + p + "px, 0px)");
-        i++;
-        if (i == h + p) {
-        	$(c).css("z-index", z * (-1) );
-        	$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)");
-        	$(c).removeAttr("id");
-        	clearInterval(timer);
-        	console.log("first really down.");
-        	if ( $(c).hasClass("last")) {
-        		console.log("last one finished");
-        		return;
-        	}
-        	else {
-        		console.log("next one trying");
-        		allDivsHide(clipCompliment);
-        	};
-        }
-	}, 30);
+	if (!($(c).hasClass("last"))) {
+		timer = setInterval(function () {
+			$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + p + "px, 0px)");
+	        i++;
+	        if (i == h + p) {
+	        	$(c).css("z-index", z * (-1) );
+	        	$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)");
+	        	$(c).removeAttr("id");
+	        	clearInterval(timer);
+	        	console.log("first really down.");
+	        	setTimeout(function () { allDivsHide(clipCompliment); }, 3400);
+	        }
+		}, 30);
+	};
 }
 
 function randomColor () {
@@ -108,7 +99,6 @@ function createComplimentDivs () {
 			$(c).addClass("last");
 		};
 	}
-	// resizeCheck();
 }
 
 function resizeCheck() {
@@ -126,31 +116,12 @@ function resizeCheck() {
 	})
 }
 
-function deleteTopDiv () {
-	currentDiv = $("#current");
-	
-	var timer = setInterval(function() {
-		if ($(currentDiv).css("visibility", "visible")) {
-			clipCompliment();
-		}
-	}, 300);
-
-	return 
-}
 
 function initialize() {
 	sortCompliments();
 	createComplimentDivs();
 	resizeCheck();
-	console.log(comp.length);
-	// for (var i = 0, len = comp.length; i < len; i++) {
-	// 	allDivsHide();
-	// 	console.log( len - i - 1, " to go");
-	// };
-
-	allDivsHide(clipCompliment);
-	
-	
+	timer = setTimeout(function () { allDivsHide(clipCompliment); }, 3400);
 }
 
 $(document).ready(initialize);
