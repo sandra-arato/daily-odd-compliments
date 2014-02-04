@@ -158,10 +158,17 @@ function makeCorsRequest() {
 
 function initialize() {
 	// makeCorsRequest();
-	$.getJSON("https://www.facebook.com/feeds/page.php?id=342691952483262&format=json", function (data) {
-		console.log("loading started");
-		console.log(data);
-	});
+	//get the JSON data from the Twitter search API
+	$.getJSON("http://search.twitter.com/search.json?qq=from%3ADailyOddComp%20%23DailyOddCompliment&src=typd;rpp=5&amp;callback=?", function(data)
+	{
+	    //loop the tweets
+	    $(data.results).each(function(i,v)
+	    {
+	    	console.log(i);
+	    	console.log(v);
+	        //...see full code below
+	    }
+	}
 
 	// // sort compliments based on text length: 
 	// comp = $.map(comp, function(val, i) {
