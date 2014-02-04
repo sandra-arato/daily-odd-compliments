@@ -16,10 +16,11 @@ var comp = [
 	"You smell so good, I wish I could wax your scent into a candle. On a related note, I have no idea how candles are made."
 ];
 
-function allDivsHide (callback) {
+function findTopDiv (callback) {
 	var indexHighest = 0;
 	var currentDiv;
 
+	// check which div is on the top
 	$("#container div").each(function() {
 		var indexCurrent = parseInt($(this).css("z-index"));
 		if (indexCurrent > indexHighest) {
@@ -28,32 +29,36 @@ function allDivsHide (callback) {
 		}
 	});
 
+	// the id "current" is added to the div that is on the top
 	$(currentDiv).attr("id", "current");
-
+	// this is where the clipping of the top element starts. callback function is clipCompliment
 	callback($("#current"));
 }
 
 function clipCompliment (c) {
-
+	// the #current top div is passed as an argument to the function
+	// the function gets the dimensions of the 'c' div to use them in the css property clip
 	var w = parseInt($(window).width());
-	var h = parseInt($("#current").height());
-	var p = parseInt($(c).css("padding-top")); // top padding of the div
+	var h = parseInt($(c).height());
+	var p = parseInt($(c).css("padding-top"));
 	var z = parseInt($(c).css("z-index"));
 	var i = 0;
 
+	// clipping only occures if the c div is not the last one. 
+	// if it's the last div among the compliments, it just stops
 	if (!($(c).hasClass("last"))) {
 		timer = setInterval(function () {
 			$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + p + "px, 0px)");
-	        i++;
-	        if (i == h + p) {
-	        	$(c).css("z-index", z * (-1) );
-	        	$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)");
-	        	$(c).removeAttr("id");
-	        	clearInterval(timer);
-	        	console.log("first really down.");
-	        	setTimeout(function () { allDivsHide(clipCompliment); }, 3400);
-	        }
-		}, 30);
+			i++;
+			// when the clipping is finished, the clipped part equals the original height
+			if (i == h + p) {
+				$(c).css("z-index", z * (-1) ); // move current to the back
+				$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)"); // restore height
+				$(c).removeAttr("id"); // get rid of "current" id
+				clearInterval(timer); // stop running clip
+				setTimeout(function () { findTopDiv(clipCompliment); }, 3400); // start next one
+			}
+		}, 24);
 	};
 }
 
@@ -106,9 +111,7 @@ function resizeCheck() {
 function initialize() {
 	// sort compliments based on text length: 
 	comp = $.map(comp, function(val, i) {
-		if (comp[i].length <= 140) {
-			return val;
-		}
+		if (comp[i].length <= 140) { return val; }
 	});
 
 	// create divs with compliments in them
@@ -116,7 +119,7 @@ function initialize() {
 	resizeCheck();
 
 	// remove top compliment div with clipping method, one after another
-	timer = setTimeout(function () { allDivsHide(clipCompliment); }, 3400);
+	timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
 }
 
 $(document).ready(initialize);
