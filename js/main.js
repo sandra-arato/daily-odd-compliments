@@ -164,7 +164,7 @@ function initialize() {
 	    //loop the tweets
 	    $(data.results).each(function(i,v)
 	    { console.log(i); console.log(v); });
-	}
+	});
 
 	// // sort compliments based on text length: 
 	// comp = $.map(comp, function(val, i) {
