@@ -1,6 +1,7 @@
 var timer;
 var play = true;
 
+// array of compliments that will be pulled from Facebook later
 var comp = [
 	"The first time we met, I was like, \'Well, this person seems cool.\' And now I\'m like, \'I literally think you can read my mind.\'",
 	"Your sense of humor is fantastic. And by that I mean you laugh at my jokes. Which is fantastic.",
@@ -18,59 +19,23 @@ var comp = [
 ];
 
 function pauseAndPlay (p) {
-	// if play = true, it runs, so it has to be stopped
-	console.log("play", p);
+	play = !play;
+	// if p = true, it runs currently, so it has to be stopped
 	if (!p) {
-		p = true;
-		console.log("now should be running because play is " + p);
-		$("#button").html("Pause").css("background-color", "red");
-		// clearInterval(timer);
-			console.log("in clipping");
-			var c = $("#current");
-			var data = $(c).css("clip");
-			var dim = data.slice(5, data.length -1);
-			dim = dim.split("px ");
-			var i = parseInt(dim[0]);
-			var w = parseInt(dim[1]);
-			var h = parseInt(dim[2]);
-			var p = parseInt($(c).css("padding-top"));
-			h = h + p;
-			var z = parseInt($(c).css("z-index"));
-			if (!($(c).hasClass("last"))) {
-				timer = setInterval(function () {
-					$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
-					i++;
-					// when the clipping is finished, the clipped part equals the original height
-					if (i == h + p) {
-						$(c).css("z-index", z * (-1) ); // move current to the back
-						$(c).css("clip", "rect(0px, "+ w + "px, " + h + "px, 0px)"); // restore height
-						$(c).removeAttr("id"); // get rid of "current" id
-						clearInterval(timer); // stop running clip
-						console.log("arrives here");
-						setTimeout(function () { console.log("set timeout starts"); findTopDiv(clipCompliment); }, 3400); // start next one
-					}
-				}, 28);
-			};
+		$("#button").html("Pause").css("background-color", "#D93300");
+		clipCompliment($("#current"));
 	}
 	else {
-		p = false;
 		clearInterval(timer);
-		console.log("stop running cause play is " + p);
-		$("#button").html("Play").css("background-color", "green");	
-		// clipCompliment($("#current"));
-		if (!p) {
-			// returns to a clipped part and runs the clipping from there
-			
-		};
+		$("#button").html("Play").css("background-color", "#008B00");	
 	}
-	play = p;
 }
 
 
 function findTopDiv (callback) {
 	var indexHighest = 0;
 	var currentDiv;
-
+	$("#button").css("visibility", "visible");
 	// check which div is on the top
 	$("#container div").each(function() {
 		var indexCurrent = parseInt($(this).css("z-index"));
@@ -89,12 +54,26 @@ function findTopDiv (callback) {
 function clipCompliment (c) {
 	// the #current top div is passed as an argument to the function
 	// the function gets the dimensions of the 'c' div to use them in the css property clip
+	var data = $(c).css("clip");
+	console.log(c);
 	var w = parseInt($(window).width());
 	var h = parseInt($(c).height(), 10);
 	var p = parseInt($(c).css("padding-top"));
-	h = h + p;
+	h = h + p + 1 ;
 	var z = parseInt($(c).css("z-index"));
 	var i = 0;
+
+	// the following condition tests if the clipping is continous - (it already started before)
+	// if yes, it will overwrite the clipping variables to the current point of clipping
+	if (play && data !== "auto") {
+		var dim = data.slice(5, data.length -1);
+		dim = dim.split("px ");
+		i = parseInt(dim[0]);
+		w = parseInt(dim[1]);
+		h = parseInt(dim[2]);
+		p = parseInt($(c).css("padding-top"));
+		h = h + p;
+	};
 
 	// clipping only occures if the c div is not the last one. 
 	// if it's the last div among the compliments, it just stops
@@ -168,12 +147,13 @@ function initialize() {
 
 	// create divs with compliments in them
 	createComplimentDivs();
-	resizeCheck();
 
 	// remove top compliment div with clipping method, one after another
 	timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
-	// var play = true;
+	// when user clicks on the button, browser stops or continues clipping
 	$("#button").click(play, function() { pauseAndPlay(play);});
+
+	resizeCheck();
 }
 
 $(document).ready(initialize);
