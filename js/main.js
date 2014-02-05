@@ -1,4 +1,5 @@
 var timer;
+var play = true;
 
 var comp = [
 	"The first time we met, I was like, \'Well, this person seems cool.\' And now I\'m like, \'I literally think you can read my mind.\'",
@@ -15,6 +16,56 @@ var comp = [
 	"After we first met, I wanted to know more about you, but I couldn\'t remember your name, so I looked up \'Beautiful.\'",
 	"You smell so good, I wish I could wax your scent into a candle. On a related note, I have no idea how candles are made."
 ];
+
+function pauseAndPlay (p) {
+	// if play = true, it runs, so it has to be stopped
+	console.log("play", p);
+	if (!p) {
+		p = true;
+		console.log("now should be running because play is " + p);
+		$("#button").html("Pause").css("background-color", "red");
+		// clearInterval(timer);
+			console.log("in clipping");
+			var c = $("#current");
+			var data = $(c).css("clip");
+			var dim = data.slice(5, data.length -1);
+			dim = dim.split("px ");
+			var i = parseInt(dim[0]);
+			var w = parseInt(dim[1]);
+			var h = parseInt(dim[2]);
+			var p = parseInt($(c).css("padding-top"));
+			h = h + p;
+			var z = parseInt($(c).css("z-index"));
+			if (!($(c).hasClass("last"))) {
+				timer = setInterval(function () {
+					$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
+					i++;
+					// when the clipping is finished, the clipped part equals the original height
+					if (i == h + p) {
+						$(c).css("z-index", z * (-1) ); // move current to the back
+						$(c).css("clip", "rect(0px, "+ w + "px, " + h + "px, 0px)"); // restore height
+						$(c).removeAttr("id"); // get rid of "current" id
+						clearInterval(timer); // stop running clip
+						console.log("arrives here");
+						setTimeout(function () { console.log("set timeout starts"); findTopDiv(clipCompliment); }, 3400); // start next one
+					}
+				}, 28);
+			};
+	}
+	else {
+		p = false;
+		clearInterval(timer);
+		console.log("stop running cause play is " + p);
+		$("#button").html("Play").css("background-color", "green");	
+		// clipCompliment($("#current"));
+		if (!p) {
+			// returns to a clipped part and runs the clipping from there
+			
+		};
+	}
+	play = p;
+}
+
 
 function findTopDiv (callback) {
 	var indexHighest = 0;
@@ -39,8 +90,9 @@ function clipCompliment (c) {
 	// the #current top div is passed as an argument to the function
 	// the function gets the dimensions of the 'c' div to use them in the css property clip
 	var w = parseInt($(window).width());
-	var h = parseInt($(c).height());
+	var h = parseInt($(c).height(), 10);
 	var p = parseInt($(c).css("padding-top"));
+	h = h + p;
 	var z = parseInt($(c).css("z-index"));
 	var i = 0;
 
@@ -48,17 +100,17 @@ function clipCompliment (c) {
 	// if it's the last div among the compliments, it just stops
 	if (!($(c).hasClass("last"))) {
 		timer = setInterval(function () {
-			$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + p + "px, 0px)");
+			$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
 			i++;
 			// when the clipping is finished, the clipped part equals the original height
 			if (i == h + p) {
 				$(c).css("z-index", z * (-1) ); // move current to the back
-				$(c).css("clip", "rect(0px, "+ w + "px, " + h + p + "px, 0px)"); // restore height
+				$(c).css("clip", "rect(0px, "+ w + "px, " + h + "px, 0px)"); // restore height
 				$(c).removeAttr("id"); // get rid of "current" id
 				clearInterval(timer); // stop running clip
 				setTimeout(function () { findTopDiv(clipCompliment); }, 3400); // start next one
 			}
-		}, 24);
+		}, 28);
 	};
 }
 
@@ -107,101 +159,21 @@ function resizeCheck() {
 	})
 }
 
-
-	// Create the XHR object.
-function createCORSRequest(method, url) {
-  var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    // XHR for Chrome/Firefox/Opera/Safari.
-    xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    // XDomainRequest for IE.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    // CORS not supported.
-    xhr = null;
-  }
-  return xhr;
-}
-
-// Helper method to parse the title tag from the response.
-function getTitle(text) {
-  return text.match('<title>(.*)?</title>')[1];
-}
-
-// Make the actual CORS request.
-function makeCorsRequest() {
-  // All HTML5 Rocks properties support CORS.
-  var url = 'https://www.facebook.com/feeds/page.php?id=342691952483262&format=json';
-
-  var xhr = createCORSRequest('GET', url);
-  xhr.setRequestHeader('X-Custom-Header', 'value');
-  if (!xhr) {
-    alert('CORS not supported');
-    return;
-  }
-  
-  // Response handlers.
-  xhr.onload = function() {
-    var text = xhr.responseText;
-    var title = "test title";
-    alert('Response from CORS request to ' + url + ': ' + title);
-  };
-
-  xhr.onerror = function() {
-    alert('Woops, there was an error making the request.');
-  };
-
-  xhr.send();
-}
-
 function initialize() {
-	// makeCorsRequest();
-	//get the JSON data from the Twitter search API
-	
-	$.ajax({
-        type:'GET',
-        dataType:'jsonp',
-        url:'http://api.twitter.com/1/statuses/user_timeline.json',
-        data:{screen_name:'DailyOddComp', include_rts:0}, //show retweets
-        success:function(data, textStatus, XMLHttpRequest) {
-            var tmp = false;
-            var results = $('#twitter_results');
-            console.log(data);
-            // for(i in data) {
-            //     if(data[i].retweeted_status != null) {
-            //         tmp = $('<li class="retweet" itemid="'+data[i].retweeted_status.id_str+'"><div class="dogear"></div><img src="'+data[i].retweeted_status.user.profile_image_url+'" alt="" align="left" width="48" height="48" /><cite>'+data[i].retweeted_status.user.screen_name+'</cite><p>'+data[i].retweeted_status.text.linkify_tweet()+'</p></li>');
-            //         if(data[i].retweeted_status.favorited) {
-            //             tmp.addClass('favorite');
-            //         }
-            //     } else {
-            //         tmp = $('<li itemid="'+data[i].id_str+'"><div class="dogear"></div><img src="'+data[i].user.profile_image_url+'" alt="" align="left" width="48" height="48" /><cite>'+data[i].user.screen_name+'</cite><p>'+data[i].text.linkify_tweet()+'</p></li>');
-            //         if(data[i].favorited) {
-            //             tmp.addClass('favorite');
-            //         }
-            //     }
-                
-            //     results.append(tmp);
-            // }
-        },
-        error:function(req, status, error) {
-            alert('error: '+status);
-        }
-    });
 
+	// sort compliments based on text length: 
+	comp = $.map(comp, function(val, i) {
+		if (comp[i].length <= 140) { return val; }
+	});
 
-	// // sort compliments based on text length: 
-	// comp = $.map(comp, function(val, i) {
-	// 	if (comp[i].length <= 140) { return val; }
-	// });
+	// create divs with compliments in them
+	createComplimentDivs();
+	resizeCheck();
 
-	// // create divs with compliments in them
-	// createComplimentDivs();
-	// resizeCheck();
-
-	// // remove top compliment div with clipping method, one after another
-	// timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
+	// remove top compliment div with clipping method, one after another
+	timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
+	// var play = true;
+	$("#button").click(play, function() { pauseAndPlay(play);});
 }
 
 $(document).ready(initialize);
