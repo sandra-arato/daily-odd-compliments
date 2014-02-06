@@ -20,14 +20,14 @@ var comp = [
 
 function pauseAndPlay (p) {
 	play = !play;
-	// if p = true, it runs currently, so it has to be stopped
+	// when p = true, it runs currently, so it has to be stopped
 	if (!p) {
-		$("#button").html("Pause").css("background-color", "#D93300");
+		$("#button").html("Pause").css("background-color", "#ec173a");
 		clipCompliment($("#current"));
 	}
 	else {
 		clearInterval(timer);
-		$("#button").html("Play").css("background-color", "#008B00");	
+		$("#button").html("Play").css("background-color", "#008b00");	
 	}
 }
 
@@ -58,7 +58,7 @@ function clipCompliment (c) {
 	console.log(c);
 	var w = parseInt($(window).width());
 	var h = parseInt($(c).height(), 10);
-	var p = parseInt($(c).css("padding-top"));
+	var p = parseInt($(c).css("padding-top")) + parseInt($(c).css("padding-bottom"));
 	h = h + p + 1 ;
 	var z = parseInt($(c).css("z-index"));
 	var i = 0;
@@ -71,7 +71,7 @@ function clipCompliment (c) {
 		i = parseInt(dim[0]);
 		w = parseInt(dim[1]);
 		h = parseInt(dim[2]);
-		p = parseInt($(c).css("padding-top"));
+		p = parseInt($(c).css("padding-top")) + parseInt($(c).css("padding-bottom"));
 		h = h + p;
 	};
 
@@ -82,7 +82,7 @@ function clipCompliment (c) {
 			$(c).css("clip", "rect(" + i +"px, "+ w + "px, " + h + "px, 0px)");
 			i++;
 			// when the clipping is finished, the clipped part equals the original height
-			if (i == h + p) {
+			if (i == h || i > h) {
 				$(c).css("z-index", z * (-1) ); // move current to the back
 				$(c).css("clip", "rect(0px, "+ w + "px, " + h + "px, 0px)"); // restore height
 				$(c).removeAttr("id"); // get rid of "current" id
@@ -124,18 +124,19 @@ function createComplimentDivs () {
 }
 
 function resizeCheck() {
-	$(window).resize(function () {
-		
-		if ($(window).width() < 510) {
-			$("#container div").css("height", "9.2em");
-		}
-		else if ($(window).width() < 725) {
-			$("#container div").css("height", "7.8em");
-		}
-		else {
-			$("#container div").css("height", "6.8em");
-		}
-	})
+	if ($(window).width() < 510) {
+		$("#container div").css("height", "9.2em");
+	}
+	else if ($(window).width() < 725) {
+		$("#container div").css({
+			height: "7.8em",
+		});
+	}
+	else {
+		$("#container div").css({
+				height: "6.8em"
+			});
+	}
 }
 
 function initialize() {
@@ -147,13 +148,14 @@ function initialize() {
 
 	// create divs with compliments in them
 	createComplimentDivs();
-
+	resizeCheck();
 	// remove top compliment div with clipping method, one after another
 	timer = setTimeout(function () { findTopDiv(clipCompliment); }, 3400);
 	// when user clicks on the button, browser stops or continues clipping
 	$("#button").click(play, function() { pauseAndPlay(play);});
+	$(window).resize(function () { resizeCheck(); });
 
-	resizeCheck();
+
 }
 
 $(document).ready(initialize);
