@@ -55,7 +55,6 @@ function clipCompliment (c) {
 	// the #current top div is passed as an argument to the function
 	// the function gets the dimensions of the 'c' div to use them in the css property clip
 	var data = $(c).css("clip");
-	console.log(c);
 	var w = parseInt($(window).width());
 	var h = parseInt($(c).height(), 10);
 	var p = parseInt($(c).css("padding-top")) + parseInt($(c).css("padding-bottom"));
